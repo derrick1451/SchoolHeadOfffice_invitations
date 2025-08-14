@@ -1,15 +1,19 @@
-import { useState, useEffect, useRef, FC } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import Tabs from './Tabs';
-import MenuDropdown from './MenuDropdown';
-import AdminDrop from './AdminDrop';
-import MenuReflectionTab from './MenuReflectionTab';
-import { useAppTheme } from '../../../../context/ThemeContext';
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { FC, useEffect, useRef, useState } from "react";
+import { useAppTheme } from "../../../../context/ThemeContext";
+import AdminDrop from "./AdminDrop";
+import MenuDropdown from "./MenuDropdown";
+import MenuReflectionTab from "./MenuReflectionTab";
+import Tabs from "./Tabs";
 
-import { School } from '../../shared/types/School'; // Import shared type
+import { School } from "../../shared/types/School"; // Import shared type
 
-
+interface User {
+  id?: string;
+  name?: string;
+  email?: string;
+}
 
 interface NavbarProps {
   user?: User | null;
@@ -24,7 +28,7 @@ const Navbar: FC<NavbarProps> = ({
   user = null,
   loading = false,
   schools = [],
-  searchQuery = '',
+  searchQuery = "",
   userRoles = [],
   setSearchQuery = () => {},
 }) => {
@@ -37,55 +41,63 @@ const Navbar: FC<NavbarProps> = ({
   const adminDropdownRef = useRef<HTMLDivElement>(null);
   const profileModalRef = useRef<HTMLDivElement>(null);
 
-  const isAdmin = userRoles.includes('Admin');
+  const isAdmin = userRoles.includes("Admin");
 
   // Get the school logo URL safely
   const getSchoolLogo = () => {
     if (currentSchool?.logo) return currentSchool.logo;
-    return '/felixwhitbg.PNG';
+    return "/felixwhitbg.PNG";
   };
 
   // Handler functions
-  const handleLogin = () => router.push('/api/auth/login');
-  const handleLogout = () => router.push('/api/auth/logout');
-  const toggleReflection = () => setShowReflection(prev => !prev);
-  const toggleProfileModal = () => setShowProfileModal(prev => !prev);
-  const toggleAdminDropdown = () => setShowAdminDropdown(prev => !prev);
+  const handleLogin = () => router.push("/api/auth/login");
+  const handleLogout = () => router.push("/api/auth/logout");
+  const toggleReflection = () => setShowReflection((prev) => !prev);
+  const toggleProfileModal = () => setShowProfileModal((prev) => !prev);
+  const toggleAdminDropdown = () => setShowAdminDropdown((prev) => !prev);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (adminDropdownRef.current && !adminDropdownRef.current.contains(event.target as Node)) {
+      if (
+        adminDropdownRef.current &&
+        !adminDropdownRef.current.contains(event.target as Node)
+      ) {
         setShowAdminDropdown(false);
       }
-      if (profileModalRef.current && !profileModalRef.current.contains(event.target as Node)) {
+      if (
+        profileModalRef.current &&
+        !profileModalRef.current.contains(event.target as Node)
+      ) {
         setShowProfileModal(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div className="relative">
       {/* Main Navigation Bar */}
-      <nav 
+      <nav
         className="border-b border-gray-200"
-        style={{ backgroundColor: primaryColor || 'white' }}
+        style={{ backgroundColor: primaryColor || "white" }}
       >
         <div className="max-w-full mx-auto h-20 flex items-center px-4">
           {/* Left Section - Logo and School Name */}
           <div className="flex items-center space-x-6">
             <Link href="/" passHref>
               <div className="cursor-pointer">
-             <img
-  src={getSchoolLogo()}
-  alt={`${currentSchool?.schoolName || currentSchool?.name || 'School'} Logo`}
-  width={70}
-  height={70}
-  className="object-contain"
-/>
+                <img
+                  src={getSchoolLogo()}
+                  alt={`${
+                    currentSchool?.schoolName || currentSchool?.name || "School"
+                  } Logo`}
+                  width={70}
+                  height={70}
+                  className="object-contain"
+                />
               </div>
             </Link>
             {currentSchool?.schoolName && (
@@ -134,7 +146,7 @@ const Navbar: FC<NavbarProps> = ({
                 </div>
 
                 {/* Logout Button */}
-                <button 
+                <button
                   onClick={handleLogout}
                   className="text-white hover:text-gray-200 transition-colors"
                 >
@@ -143,7 +155,7 @@ const Navbar: FC<NavbarProps> = ({
               </>
             ) : (
               /* Login Button */
-              <button 
+              <button
                 onClick={handleLogin}
                 className="text-white hover:text-gray-200 transition-colors"
               >
@@ -163,15 +175,24 @@ const Navbar: FC<NavbarProps> = ({
       {/* Profile Modal */}
       {showProfileModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div 
+          <div
             ref={profileModalRef}
             className="bg-white p-6 rounded-lg shadow-xl w-96 max-w-full mx-4"
           >
             <h2 className="text-2xl font-bold mb-4">User Profile</h2>
             <div className="space-y-3">
-              <p><span className="font-semibold">Name:</span> {user?.name || 'N/A'}</p>
-              <p><span className="font-semibold">Email:</span> {user?.email || 'N/A'}</p>
-              <p><span className="font-semibold">Roles:</span> {userRoles.join(', ') || 'None'}</p>
+              <p>
+                <span className="font-semibold">Name:</span>{" "}
+                {user?.name || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span>{" "}
+                {user?.email || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Roles:</span>{" "}
+                {userRoles.join(", ") || "None"}
+              </p>
             </div>
             <button
               className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full"
